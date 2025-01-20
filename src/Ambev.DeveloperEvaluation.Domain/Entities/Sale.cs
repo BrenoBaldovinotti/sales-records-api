@@ -67,6 +67,11 @@ public class Sale : BaseEntity
     /// </summary>
     public void RecalculateTotal()
     {
+        foreach (var item in Items)
+        {
+            item.CalculateTotal();
+        }
+
         TotalAmount = Items.Sum(item => item.Total);
     }
 }
