@@ -37,4 +37,12 @@ public interface ISaleRepository
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>True if the sale was deleted, false if not found</returns>
     Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Retrieves a sale by its unique sale number.
+    /// </summary>
+    /// <param name="saleNumber">The unique sale number.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The sale if found, null otherwise.</returns>
+    Task<Sale?> GetBySaleNumberAsync(string saleNumber, CancellationToken cancellationToken = default);
 }

@@ -57,4 +57,10 @@ public class SaleRepository : ISaleRepository
         await _context.SaveChangesAsync(cancellationToken);
         return true;
     }
+
+    /// <inheritdoc/>
+    public async Task<Sale?> GetBySaleNumberAsync(string saleNumber, CancellationToken cancellationToken = default)
+    {
+        return await _context.Sales!.FirstOrDefaultAsync(s => s.SaleNumber == saleNumber, cancellationToken);
+    }
 }
