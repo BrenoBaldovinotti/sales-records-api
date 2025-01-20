@@ -8,14 +8,17 @@ namespace Ambev.DeveloperEvaluation.ORM;
 
 public class DefaultContext : DbContext
 {
-    public DbSet<User> Users { get; set; }
+    public DbSet<User>? Users { get; set; }
+    public DbSet<Sale>? Sales { get; set; }
+    public DbSet<SaleItem>? SaleItems { get; set; }
+    public DbSet<Branch>? Branches { get; set; }
+    public DbSet<Product>? Products { get; set; }
 
-    public DefaultContext(DbContextOptions<DefaultContext> options) : base(options)
-    {
-    }
+    public DefaultContext(DbContextOptions<DefaultContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Apply all configurations from the current assembly (i.g. Adapters/Driven/Infrastructure/ORM/Mapping)
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(modelBuilder);
     }
