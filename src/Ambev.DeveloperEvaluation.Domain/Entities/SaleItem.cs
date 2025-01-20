@@ -57,6 +57,8 @@ public class SaleItem : BaseEntity
     /// </summary>
     public void CalculateTotal()
     {
-        Total = (UnitPrice * Quantity) - Discount;
+        var partialTotal = UnitPrice * Quantity;
+
+        Total = Discount > partialTotal ? 0 : (partialTotal - Discount);
     }
 }
