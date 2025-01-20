@@ -14,5 +14,8 @@ public class GetUserProfile : Profile
     {
         CreateMap<Guid, Application.Users.GetUser.GetUserCommand>()
             .ConstructUsing(id => new Application.Users.GetUser.GetUserCommand(id));
+
+        // Map from GetUserResult to GetUserResponse
+        CreateMap<Application.Users.GetUser.GetUserResult, GetUserResponse>();
     }
 }

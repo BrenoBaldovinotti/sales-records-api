@@ -40,9 +40,4 @@ public class CreateSaleItemRequest
     /// Gets or sets the quantity of the product.
     /// </summary>
     public int Quantity { get; set; }
-
-    /// <summary>
-    /// Gets or sets the unit price of the product.
-    /// </summary>
-    public decimal UnitPrice { get; set; }
 }

@@ -40,6 +40,7 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
     {
         var validator = new CreateSaleCommandValidator();
         var validationResult = await validator.ValidateAsync(command, cancellationToken);
+
         if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors);
 
         var branch = await _branchRepository.GetByIdAsync(command.BranchId, cancellationToken);
@@ -50,21 +51,27 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
         // Generate Sale Number
         sale.SaleNumber = await GenerateUniqueSaleNumberAsync(cancellationToken);
 
-        // Validate products and calculate discounts
+        // Validate products and fetch their prices
         foreach (var item in command.Items)
         {
             var product = await _productRepository.GetByIdAsync(item.ProductId, cancellationToken);
             if (product == null) throw new InvalidOperationException($"Product with ID {item.ProductId} not found.");
-            
+
             if (item.Quantity > 20) throw new InvalidOperationException("Cannot sell more than 20 identical items.");
 
-            sale.Items.Add(new SaleItem
+            // Use product's price as unit price
+            var saleItem = new SaleItem
             {
                 ProductId = item.ProductId,
                 Quantity = item.Quantity,
-                UnitPrice = item.UnitPrice,
-                Discount = CalculateDiscount(item.Quantity, item.UnitPrice)
-            });
+                UnitPrice = product.BasePrice,
+                Discount = CalculateDiscount(item.Quantity, product.BasePrice)
+            };
+
+            // Calculate the total for the sale item
+            saleItem.CalculateTotal();
+
+            sale.Items.Add(saleItem);
         }
 
         sale.RecalculateTotal();
