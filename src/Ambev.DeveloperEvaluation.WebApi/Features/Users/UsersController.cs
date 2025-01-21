@@ -8,6 +8,7 @@ using Ambev.DeveloperEvaluation.WebApi.Features.Users.DeleteUser;
 using Ambev.DeveloperEvaluation.Application.Users.CreateUser;
 using Ambev.DeveloperEvaluation.Application.Users.GetUser;
 using Ambev.DeveloperEvaluation.Application.Users.DeleteUser;
+using Ambev.DeveloperEvaluation.Common.Models;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Users;
 
@@ -39,8 +40,8 @@ public class UsersController : BaseController
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The created user details</returns>
     [HttpPost]
-    [ProducesResponseType(typeof(ApiResponseWithData<CreateUserResponse>), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponseWithDataModel<CreateUserResponse>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiResponseModel), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request, CancellationToken cancellationToken)
     {
         var validator = new CreateUserRequestValidator();
@@ -52,7 +53,7 @@ public class UsersController : BaseController
         var command = _mapper.Map<CreateUserCommand>(request);
         var response = await _mediator.Send(command, cancellationToken);
 
-        return Created(string.Empty, new ApiResponseWithData<CreateUserResponse>
+        return Created(string.Empty, new ApiResponseWithDataModel<CreateUserResponse>
         {
             Success = true,
             Message = "User created successfully",
@@ -67,9 +68,9 @@ public class UsersController : BaseController
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The user details if found</returns>
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(ApiResponseWithData<GetUserResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiResponseWithDataModel<GetUserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponseModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponseModel), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetUser([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var request = new GetUserRequest { Id = id };
@@ -82,7 +83,7 @@ public class UsersController : BaseController
         var command = _mapper.Map<GetUserCommand>(request.Id);
         var response = await _mediator.Send(command, cancellationToken);
 
-        return Ok(new ApiResponseWithData<GetUserResponse>
+        return Ok(new ApiResponseWithDataModel<GetUserResponse>
         {
             Success = true,
             Message = "User retrieved successfully",
@@ -97,9 +98,9 @@ public class UsersController : BaseController
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Success response if the user was deleted</returns>
     [HttpDelete("{id}")]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponseModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponseModel), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteUser([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var request = new DeleteUserRequest { Id = id };
@@ -112,7 +113,7 @@ public class UsersController : BaseController
         var command = _mapper.Map<DeleteUserCommand>(request.Id);
         await _mediator.Send(command, cancellationToken);
 
-        return Ok(new ApiResponse
+        return Ok(new ApiResponseModel
         {
             Success = true,
             Message = "User deleted successfully"

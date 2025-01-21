@@ -1,4 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Common.Models;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -62,5 +63,23 @@ public class SaleRepository : ISaleRepository
     public async Task<Sale?> GetBySaleNumberAsync(string saleNumber, CancellationToken cancellationToken = default)
     {
         return await _context.Sales!.FirstOrDefaultAsync(s => s.SaleNumber == saleNumber, cancellationToken);
+    }
+
+    /// <summary>
+    /// Retrieves a paginated list of sales from the database.
+    /// </summary>
+    /// <param name="pageNumber">The current page number.</param>
+    /// <param name="pageSize">The number of sales per page.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A paginated list of sales.</returns>
+    public async Task<PaginatedListModel<Sale>> GetPaginatedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    {
+        return await PaginatedListModel<Sale>.CreateAsync(
+            _context.Sales!
+                .Include(s => s.Items) // Include related SaleItems
+                .AsNoTracking(),       // Use AsNoTracking for read-only queries
+            pageNumber,
+            pageSize
+        );
     }
 }
