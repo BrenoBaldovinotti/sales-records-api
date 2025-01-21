@@ -60,15 +60,10 @@ public class SaleRepository : ISaleRepository
     }
 
     /// <inheritdoc/>
-    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(Sale sale, CancellationToken cancellationToken)
     {
-        var sale = await GetByIdAsync(id, cancellationToken);
-        if (sale == null)
-            return false;
-
         _context.Sales!.Remove(sale);
         await _context.SaveChangesAsync(cancellationToken);
-        return true;
     }
 
     /// <inheritdoc/>
