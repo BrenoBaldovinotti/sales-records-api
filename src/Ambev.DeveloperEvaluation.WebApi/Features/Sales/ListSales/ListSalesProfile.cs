@@ -1,48 +1,50 @@
 ﻿using AutoMapper;
+using Ambev.DeveloperEvaluation.Application.Sales.ListSales;
 using Ambev.DeveloperEvaluation.Common.Models;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSales;
 
 /// <summary>
-/// Profile for mapping ListSales results to API responses.
+/// Profile for mapping ListSales query results to responses.
 /// </summary>
 public class ListSalesProfile : Profile
 {
-    /// <summary>
-    /// Initializes the mappings for ListSales feature.
-    /// </summary>
     public ListSalesProfile()
     {
-        // Map ListSalesRequest to ListSalesQuery
-        CreateMap<ListSalesRequest, Application.Sales.ListSales.ListSalesQuery>();
+        // Map application result to API response
+        CreateMap<ListSalesResult, ListSalesResponse>()
+            .ForMember(dest => dest.Sales, opt => opt.MapFrom(src => src.Sales)); // Ensure sales list is mapped
 
-        // Map ListSaleResult to ListSaleResponse
-        CreateMap<Application.Sales.ListSales.ListSalesResult, ListSalesResponse>();
+        // Map from API request to application query
+        CreateMap<ListSalesRequest, ListSalesQuery>();
 
-        // Map PaginatedListModel<ListSaleResult> to PaginatedListModel<ListSaleResponse>
+        // Map SaleResult to SaleResponse
+        CreateMap<SaleResult, SaleResponse>();
+
+        // Map PaginatedListModel<SaleResult> to PaginatedListModel<SaleResponse>
         CreateMap(typeof(PaginatedListModel<>), typeof(PaginatedListModel<>))
             .ConvertUsing(typeof(PaginatedListModelConverter<,>));
     }
 }
 
 /// <summary>
-/// Converts PaginatedListModel<TSource> to PaginatedListModel<TDestination>.
+/// Converter for PaginatedListModel in API.
 /// </summary>
-public class PaginatedListModelConverter<TSource, TDestination>
-    : ITypeConverter<PaginatedListModel<TSource>, PaginatedListModel<TDestination>>
+public class PaginatedListModelConverter<TSource, TDestination> : ITypeConverter<PaginatedListModel<TSource>, PaginatedListModel<TDestination>>
 {
+    private readonly IMapper _mapper;
+
+    public PaginatedListModelConverter(IMapper mapper)
+    {
+        _mapper = mapper;
+    }
+
     public PaginatedListModel<TDestination> Convert(
         PaginatedListModel<TSource> source,
         PaginatedListModel<TDestination> destination,
         ResolutionContext context)
     {
-        var mappedItems = context.Mapper.Map<List<TDestination>>(source);
-
-        return new PaginatedListModel<TDestination>(
-            mappedItems,
-            source.TotalCount,
-            source.CurrentPage,
-            source.PageSize
-        );
+        var items = _mapper.Map<List<TDestination>>(source);
+        return new PaginatedListModel<TDestination>(items, source.TotalCount, source.CurrentPage, source.PageSize);
     }
 }

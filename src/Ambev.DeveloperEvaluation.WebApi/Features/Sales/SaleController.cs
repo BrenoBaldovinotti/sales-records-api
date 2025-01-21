@@ -93,19 +93,23 @@ public class SaleController : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(ApiResponseWithDataModel<PaginatedListModel<ListSalesResponse>>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponseModel), StatusCodes.Status400BadRequest)]
+    [HttpGet]
     public async Task<IActionResult> ListSale([FromQuery] ListSalesRequest request, CancellationToken cancellationToken)
     {
-        var command = _mapper.Map<ListSalesQuery>(request);
-        var result = await _mediator.Send(command, cancellationToken);
+        // Map API request to application query
+        var query = _mapper.Map<ListSalesQuery>(request);
+
+        // Send the query to the application layer
+        var result = await _mediator.Send(query, cancellationToken);
+
+        // Map application result to API response
+        var response = _mapper.Map<ListSalesResponse>(result);
 
         return Ok(new ApiResponseWithDataModel<ListSalesResponse>
         {
             Success = true,
-            Message = "Sales retrieved successfully.",
-            Data = new ListSalesResponse
-            {
-                Sales = _mapper.Map<PaginatedListModel<ListSalesResponse>>(result.Sales)
-            }
+            Message = "Sales retrieved successfully",
+            Data = response
         });
     }
 }

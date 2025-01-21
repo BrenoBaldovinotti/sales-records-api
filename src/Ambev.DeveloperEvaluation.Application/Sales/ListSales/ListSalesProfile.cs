@@ -1,45 +1,43 @@
 ﻿using AutoMapper;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Common.Models;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.ListSales;
 
 /// <summary>
-/// Profile for mapping ListSales entities to results.
+/// Profile for mapping ListSalesQuery and ListSalesResult.
 /// </summary>
 public class ListSalesProfile : Profile
 {
-    /// <summary>
-    /// Initializes the mappings for ListSales.
-    /// </summary>
     public ListSalesProfile()
     {
-        // Map Sale to ListSaleResult
-        CreateMap<Domain.Entities.Sale, ListSalesResult>();
+        // Map Sale entity to SaleResult
+        CreateMap<Sale, SaleResult>();
 
-        // Map PaginatedListModel<Sale> to PaginatedListModel<ListSaleResult>
+        // Map PaginatedListModel<Sale> to PaginatedListModel<SaleResult>
         CreateMap(typeof(PaginatedListModel<>), typeof(PaginatedListModel<>))
             .ConvertUsing(typeof(PaginatedListModelConverter<,>));
     }
 }
 
 /// <summary>
-/// Converts PaginatedListModel<TSource> to PaginatedListModel<TDestination>.
+/// Converter for PaginatedListModel.
 /// </summary>
-public class PaginatedListModelConverter<TSource, TDestination>
-    : ITypeConverter<PaginatedListModel<TSource>, PaginatedListModel<TDestination>>
+public class PaginatedListModelConverter<TSource, TDestination> : ITypeConverter<PaginatedListModel<TSource>, PaginatedListModel<TDestination>>
 {
+    private readonly IMapper _mapper;
+
+    public PaginatedListModelConverter(IMapper mapper)
+    {
+        _mapper = mapper;
+    }
+
     public PaginatedListModel<TDestination> Convert(
         PaginatedListModel<TSource> source,
         PaginatedListModel<TDestination> destination,
         ResolutionContext context)
     {
-        var mappedItems = context.Mapper.Map<List<TDestination>>(source);
-
-        return new PaginatedListModel<TDestination>(
-            mappedItems,
-            source.TotalCount,
-            source.CurrentPage,
-            source.PageSize
-        );
+        var items = _mapper.Map<List<TDestination>>(source);
+        return new PaginatedListModel<TDestination>(items, source.TotalCount, source.CurrentPage, source.PageSize);
     }
 }

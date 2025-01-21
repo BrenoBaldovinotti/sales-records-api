@@ -34,7 +34,8 @@ public class ListSalesHandler : IRequestHandler<ListSalesQuery, ListSalesResult>
     public async Task<ListSalesResult> Handle(ListSalesQuery request, CancellationToken cancellationToken)
     {
         var sales = await _saleRepository.GetPaginatedAsync(request.PageNumber, request.PageSize, cancellationToken);
-        var paginatedSales = _mapper.Map<PaginatedListModel<ListSalesResult>>(sales);
+
+        var paginatedSales = _mapper.Map<PaginatedListModel<SaleResult>>(sales);
 
         return new ListSalesResult
         {
