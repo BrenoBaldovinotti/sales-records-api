@@ -1,8 +1,8 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Validation;
 
-namespace Ambev.DeveloperEvaluation.WebApi.Common;
+namespace Ambev.DeveloperEvaluation.Common.Models;
 
-public class ApiResponse
+public class ApiResponseModel
 {
     public bool Success { get; set; }
     public string Message { get; set; } = string.Empty;
