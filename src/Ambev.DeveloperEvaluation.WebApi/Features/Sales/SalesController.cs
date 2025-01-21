@@ -11,6 +11,8 @@ using Ambev.DeveloperEvaluation.Common.Models;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
+using Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSale;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales;
 
@@ -160,4 +162,24 @@ public class SalesController : ControllerBase
             Message = "Sale deleted successfully."
         });
     }
+
+    [HttpPut("{id}/cancel")]
+    [ProducesResponseType(typeof(ApiResponseWithDataModel<CancelSaleResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponseModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponseModel), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CancelSale(Guid id, CancellationToken cancellationToken)
+    {
+        var request = new CancelSaleRequest { Id = id };
+
+        var command = _mapper.Map<CancelSaleCommand>(request.Id);
+        var response = await _mediator.Send(command, cancellationToken);
+
+        return Ok(new ApiResponseWithDataModel<CancelSaleResponse>
+        {
+            Success = true,
+            Message = "Sale cancelled successfully.",
+            Data = _mapper.Map<CancelSaleResponse>(response)
+        });
+    }
+
 }

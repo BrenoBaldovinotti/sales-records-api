@@ -1,6 +1,8 @@
-﻿using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
+﻿using Ambev.DeveloperEvaluation.Application.Events;
+using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Infrastructure.Events;
 using Ambev.DeveloperEvaluation.Unit.Application.TestData;
 using AutoMapper;
 using FluentAssertions;
@@ -18,6 +20,7 @@ public class CreateSaleHandlerTests
     private readonly IBranchRepository _branchRepository;
     private readonly IProductRepository _productRepository;
     private readonly ISaleRepository _saleRepository;
+    private readonly IEventPublisher _eventPublisher;
     private readonly IMapper _mapper;
     private readonly CreateSaleHandler _handler;
 
@@ -26,8 +29,9 @@ public class CreateSaleHandlerTests
         _branchRepository = Substitute.For<IBranchRepository>();
         _productRepository = Substitute.For<IProductRepository>();
         _saleRepository = Substitute.For<ISaleRepository>();
+        _eventPublisher = Substitute.For<IEventPublisher>();
         _mapper = Substitute.For<IMapper>();
-        _handler = new CreateSaleHandler(_saleRepository, _productRepository, _branchRepository, _mapper);
+        _handler = new CreateSaleHandler(_saleRepository, _productRepository, _branchRepository, _eventPublisher, _mapper);
     }
 
     /// <summary>

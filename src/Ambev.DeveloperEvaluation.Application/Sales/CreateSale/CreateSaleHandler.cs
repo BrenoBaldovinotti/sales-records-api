@@ -3,6 +3,8 @@ using FluentValidation;
 using MediatR;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Events;
+using Ambev.DeveloperEvaluation.Application.Events;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 
@@ -14,6 +16,7 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
     private readonly ISaleRepository _saleRepository;
     private readonly IProductRepository _productRepository;
     private readonly IBranchRepository _branchRepository;
+    private readonly IEventPublisher _eventPublisher;
     private readonly IMapper _mapper;
 
     /// <summary>
@@ -26,12 +29,14 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
     public CreateSaleHandler(
         ISaleRepository saleRepository, 
         IProductRepository productRepository, 
-        IBranchRepository branchRepository, 
+        IBranchRepository branchRepository,
+        IEventPublisher eventPublisher,
         IMapper mapper)
     {
         _saleRepository = saleRepository;
         _productRepository = productRepository;
         _branchRepository = branchRepository;
+        _eventPublisher = eventPublisher;
         _mapper = mapper;
     }
 
@@ -74,6 +79,10 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
 
         sale.RecalculateTotal();
         var createdSale = await _saleRepository.CreateAsync(sale, cancellationToken);
+
+        // Publish SaleCreated event
+        var saleCreatedEvent = new SaleCreatedEvent(sale.Id, sale.SaleNumber);
+        await _eventPublisher.PublishAsync(saleCreatedEvent, cancellationToken);
 
         return _mapper.Map<CreateSaleResult>(createdSale);
     }

@@ -1,4 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
+﻿using Ambev.DeveloperEvaluation.Application.Events;
+using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
@@ -13,6 +14,7 @@ public class UpdateSaleHandlerTests
     private readonly ISaleRepository _saleRepository;
     private readonly IBranchRepository _branchRepository;
     private readonly IProductRepository _productRepository;
+    private readonly IEventPublisher _eventPublish;
     private readonly IMapper _mapper;
     private readonly UpdateSaleHandler _handler;
 
@@ -21,8 +23,9 @@ public class UpdateSaleHandlerTests
         _saleRepository = Substitute.For<ISaleRepository>();
         _branchRepository = Substitute.For<IBranchRepository>();
         _productRepository = Substitute.For<IProductRepository>();
+        _eventPublish = Substitute.For<IEventPublisher>();
         _mapper = Substitute.For<IMapper>();
-        _handler = new UpdateSaleHandler(_saleRepository, _productRepository, _branchRepository, _mapper);
+        _handler = new UpdateSaleHandler(_saleRepository, _productRepository, _branchRepository, _eventPublish, _mapper);
     }
 
     [Fact(DisplayName = "Given valid sale update When updating Then updates successfully")]
@@ -58,12 +61,16 @@ public class UpdateSaleHandlerTests
     public async Task Handle_InvalidBranch_ThrowsInvalidOperationException()
     {
         // Arrange
+        var sale = new Sale { Id = Guid.NewGuid(), BranchId = Guid.NewGuid(), Items = new List<SaleItem>() };
         var command = new UpdateSaleCommand
         {
-            Id = Guid.NewGuid(),
-            BranchId = Guid.NewGuid(),
+            Id = sale.Id,
+            BranchId = sale.BranchId,
             Customer = "Updated Customer",
-            Items = []
+            Items =
+            [
+                new UpdateSaleItemCommand { ProductId = Guid.NewGuid(), Quantity = 5 }
+            ]
         };
 
         _saleRepository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>()).Returns(new Sale());
