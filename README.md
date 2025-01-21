@@ -34,7 +34,7 @@ Follow these steps to set up and run the project locally:
 
 3. **Apply Migrations**
    ```bash
-   dotnet ef database update
+   dotnet ef database update --project src/Ambev.DeveloperEvaluation.ORM --startup-project src/Ambev.DeveloperEvaluation.WebApi
    ```
    
 4. **Set the Startup Project**
