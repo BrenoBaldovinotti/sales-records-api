@@ -1,4 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Common.Models;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 
 namespace Ambev.DeveloperEvaluation.Domain.Repositories;
 
@@ -31,12 +32,19 @@ public interface ISaleRepository
     Task<List<Sale>> GetAllAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Deletes a sale from the database
+    /// Ùpdate a sale from the database
     /// </summary>
-    /// <param name="id">The unique identifier of the sale to delete</param>
     /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>True if the sale was deleted, false if not found</returns>
-    Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    /// <returns>The updated sale</returns>
+    Task<Sale> UpdateAsync(Sale sale, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Deletes a sale entity.
+    /// </summary>
+    /// <param name="sale">The sale to delete.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A task representing the operation.</returns>
+    Task DeleteAsync(Sale sale, CancellationToken cancellationToken);
 
     /// <summary>
     /// Retrieves a sale by its unique sale number.
@@ -45,4 +53,13 @@ public interface ISaleRepository
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The sale if found, null otherwise.</returns>
     Task<Sale?> GetBySaleNumberAsync(string saleNumber, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Retrieves a paginated list of sales from the database.
+    /// </summary>
+    /// <param name="pageNumber">The current page number.</param>
+    /// <param name="pageSize">The number of sales per page.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A paginated list of sales.</returns>
+    Task<PaginatedListModel<Sale>> GetPaginatedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
 }

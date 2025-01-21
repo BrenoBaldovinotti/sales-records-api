@@ -64,4 +64,17 @@ public class SaleItem : BaseEntity
 
         Total = Discount > partialTotal ? 0 : (partialTotal - Discount);
     }
+
+    /// <summary>
+    /// Calculates the discount for this sale item based on its quantity and unit price.
+    /// </summary>
+    public void CalculateDiscount()
+    {
+        if (Quantity >= 10)
+            Discount = UnitPrice * Quantity * 0.2m; // 20% discount
+        else if (Quantity >= 5)
+            Discount = UnitPrice * Quantity * 0.1m; // 10% discount
+        else
+            Discount = 0;
+    }
 }

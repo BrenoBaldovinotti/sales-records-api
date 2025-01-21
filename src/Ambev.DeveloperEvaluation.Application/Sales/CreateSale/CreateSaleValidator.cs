@@ -5,7 +5,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 /// <summary>
 /// Validator for CreateSaleCommand that defines validation rules for creating a sale.
 /// </summary>
-public class CreateSaleCommandValidator : AbstractValidator<CreateSaleCommand>
+public class CreateSaleValidator : AbstractValidator<CreateSaleCommand>
 {
     /// <summary>
     /// Initializes a new instance of the CreateSaleCommandValidator with defined validation rules.
@@ -20,7 +20,7 @@ public class CreateSaleCommandValidator : AbstractValidator<CreateSaleCommand>
     ///   - **ProductId**: Required and must be a valid GUID.
     ///   - **Quantity**: Must be greater than 0.
     /// </remarks>
-    public CreateSaleCommandValidator()
+    public CreateSaleValidator()
     {
         // Validate Customer field
         RuleFor(s => s.Customer)
