@@ -6,18 +6,18 @@ using System;
 namespace Ambev.DeveloperEvaluation.Unit.Application;
 
 /// <summary>
-/// Contains unit tests for the <see cref="CreateSaleCommandValidator"/>.
+/// Contains unit tests for the <see cref="CreateSaleValidator"/>.
 /// </summary>
 public class CreateSaleCommandValidatorTests
 {
-    private readonly CreateSaleCommandValidator _validator;
+    private readonly CreateSaleValidator _validator;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CreateSaleCommandValidatorTests"/> class.
     /// </summary>
     public CreateSaleCommandValidatorTests()
     {
-        _validator = new CreateSaleCommandValidator();
+        _validator = new CreateSaleValidator();
     }
 
     /// <summary>
