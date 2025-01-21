@@ -14,6 +14,5 @@ public class DeleteSaleProfile : Profile
     public DeleteSaleProfile()
     {
         CreateMap<DeleteSaleRequest, DeleteSaleCommand>();
-        CreateMap<DeleteSaleResult, DeleteSaleResponse>();
     }
 }
