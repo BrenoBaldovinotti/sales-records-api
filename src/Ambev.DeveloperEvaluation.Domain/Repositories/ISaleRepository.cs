@@ -39,12 +39,12 @@ public interface ISaleRepository
     Task<Sale> UpdateAsync(Sale sale, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Deletes a sale from the database
+    /// Deletes a sale entity.
     /// </summary>
-    /// <param name="id">The unique identifier of the sale to delete</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>True if the sale was deleted, false if not found</returns>
-    Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    /// <param name="sale">The sale to delete.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A task representing the operation.</returns>
+    Task DeleteAsync(Sale sale, CancellationToken cancellationToken);
 
     /// <summary>
     /// Retrieves a sale by its unique sale number.

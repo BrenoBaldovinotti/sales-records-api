@@ -10,6 +10,7 @@ using Ambev.DeveloperEvaluation.Application.Sales.ListSales;
 using Ambev.DeveloperEvaluation.Common.Models;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
+using Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales;
 
@@ -136,6 +137,27 @@ public class SalesController : ControllerBase
             Success = true,
             Message = "Sale updated successfully.",
             Data = _mapper.Map<UpdateSaleResponse>(result)
+        });
+    }
+
+    /// <summary>
+    /// Deletes a sale by its ID.
+    /// </summary>
+    /// <param name="id">The unique identifier of the sale to delete.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>An ApiResponse indicating success or failure.</returns>
+    [HttpDelete("{id}")]
+    [ProducesResponseType(typeof(ApiResponseModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponseModel), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteSale([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var command = new DeleteSaleCommand { Id = id };
+        await _mediator.Send(command, cancellationToken);
+
+        return Ok(new ApiResponseModel
+        {
+            Success = true,
+            Message = "Sale deleted successfully."
         });
     }
 }
