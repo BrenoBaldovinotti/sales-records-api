@@ -54,6 +54,9 @@ public class SaleItem : BaseEntity
     /// <summary>
     /// Calculates the total amount for this item.
     /// Applies the discount based on quantity and unit price.
+    /// <remarks>
+    /// If Discount is bigger than the partial total, then returns 0
+    /// </remarks>
     /// </summary>
     public void CalculateTotal()
     {

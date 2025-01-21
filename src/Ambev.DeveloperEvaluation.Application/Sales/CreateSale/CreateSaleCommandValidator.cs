@@ -12,23 +12,49 @@ public class CreateSaleCommandValidator : AbstractValidator<CreateSaleCommand>
     /// </summary>
     /// <remarks>
     /// Validation rules include:
-    /// - Customer: Required, must be a non-empty string with a maximum length of 100 characters.
-    /// - SaleDate: Must not be in the future.
-    /// - BranchId: Required and must be a valid GUID.
-    /// - Items: 
-    ///   - ProductId: Required and must be a valid GUID.
-    ///   - Quantity: Must be greater than 0.
-    ///   - UnitPrice: Must be greater than 0.
+    /// - **Customer**: Must be a valid email address, non-empty, and have a maximum length of 100 characters.
+    /// - **SaleDate**: Cannot be in the future.
+    /// - **BranchId**: Must not be empty and must be a valid GUID.
+    /// - **Items**:
+    ///   - Must not be empty (at least one item required).
+    ///   - **ProductId**: Required and must be a valid GUID.
+    ///   - **Quantity**: Must be greater than 0.
     /// </remarks>
     public CreateSaleCommandValidator()
     {
-        RuleFor(s => s.Customer).EmailAddress().NotEmpty().MaximumLength(100);
-        RuleFor(s => s.SaleDate).LessThanOrEqualTo(DateTime.UtcNow).WithMessage("Sale date cannot be in the future.");
-        RuleFor(s => s.BranchId).NotEmpty();
+        // Validate Customer field
+        RuleFor(s => s.Customer)
+            .NotEmpty().WithMessage("Customer is required.")
+            .MaximumLength(100).WithMessage("Customer must not exceed 100 characters.")
+            .EmailAddress().WithMessage("Customer must be a valid email address.");
+
+        // Validate SaleDate field
+        RuleFor(s => s.SaleDate)
+            .LessThanOrEqualTo(DateTime.UtcNow)
+            .WithMessage("Sale date cannot be in the future.");
+
+        // Validate BranchId field
+        RuleFor(s => s.BranchId)
+            .NotEmpty()
+            .WithMessage("Branch ID is required.");
+
+        // Validate Items collection
+        RuleFor(s => s.Items)
+            .NotEmpty()
+            .WithMessage("At least one sale item is required.");
+
+        // Validate each item in the Items collection
         RuleForEach(s => s.Items).ChildRules(items =>
         {
-            items.RuleFor(i => i.ProductId).NotEmpty();
-            items.RuleFor(i => i.Quantity).GreaterThan(0).WithMessage("Quantity must be greater than 0.");
+            // Validate ProductId field
+            items.RuleFor(i => i.ProductId)
+                .NotEmpty()
+                .WithMessage("Product ID is required.");
+
+            // Validate Quantity field
+            items.RuleFor(i => i.Quantity)
+                .GreaterThan(0)
+                .WithMessage("Quantity must be greater than 0.");
         });
     }
 }
