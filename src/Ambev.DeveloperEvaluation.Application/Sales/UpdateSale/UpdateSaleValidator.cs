@@ -7,6 +7,9 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 /// </summary>
 public class UpdateSaleValidator : AbstractValidator<UpdateSaleCommand>
 {
+    /// <summary>
+    /// Initializes a new instance of the UpdateSaleValidator class.
+    /// </summary>
     public UpdateSaleValidator()
     {
         RuleFor(s => s.Id)
@@ -26,10 +29,16 @@ public class UpdateSaleValidator : AbstractValidator<UpdateSaleCommand>
             .NotEmpty()
             .WithMessage("Branch ID is required.");
 
-        RuleForEach(s => s.Items).ChildRules(items =>
-        {
-            items.RuleFor(i => i.ProductId).NotEmpty().WithMessage("Product ID is required.");
-            items.RuleFor(i => i.Quantity).GreaterThan(0).WithMessage("Quantity must be greater than zero.");
-        });
+        RuleFor(s => s.Items)
+            .NotEmpty()
+            .WithMessage("Items are required.")
+            .ForEach(item =>
+            {
+                item.ChildRules(i =>
+                {
+                    i.RuleFor(i => i.ProductId).NotEmpty().WithMessage("Product ID is required.");
+                    i.RuleFor(i => i.Quantity).GreaterThan(0).WithMessage("Quantity must be greater than zero.");
+                });
+            });
     }
 }
