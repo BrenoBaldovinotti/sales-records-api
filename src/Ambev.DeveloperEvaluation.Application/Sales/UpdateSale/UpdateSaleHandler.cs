@@ -3,6 +3,8 @@ using FluentValidation;
 using MediatR;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Application.Events;
+using Ambev.DeveloperEvaluation.Domain.Events;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 
@@ -14,6 +16,7 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
     private readonly ISaleRepository _saleRepository;
     private readonly IProductRepository _productRepository;
     private readonly IBranchRepository _branchRepository;
+    private readonly IEventPublisher _eventPublisher;
     private readonly IMapper _mapper;
 
     // <summary>
@@ -26,11 +29,13 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
     public UpdateSaleHandler(ISaleRepository saleRepository,
         IProductRepository productRepository,
         IBranchRepository branchRepository,
+        IEventPublisher eventPublisher,
         IMapper mapper)
     {
         _saleRepository = saleRepository;
         _productRepository = productRepository;
         _branchRepository = branchRepository;
+        _eventPublisher = eventPublisher;
         _mapper = mapper;
     }
 
@@ -77,6 +82,9 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
 
         existingSale.RecalculateTotal();
         var updatedSale = await _saleRepository.UpdateAsync(existingSale, cancellationToken);
+
+        var saleModifiedEvent = new SaleModifiedEvent(existingSale.Id);
+        await _eventPublisher.PublishAsync(saleModifiedEvent, cancellationToken);
 
         return _mapper.Map<UpdateSaleResult>(updatedSale);
     }
