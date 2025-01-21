@@ -23,6 +23,7 @@ public class UpdateSaleHandlerTests
         _saleRepository = Substitute.For<ISaleRepository>();
         _branchRepository = Substitute.For<IBranchRepository>();
         _productRepository = Substitute.For<IProductRepository>();
+        _eventPublish = Substitute.For<IEventPublisher>();
         _mapper = Substitute.For<IMapper>();
         _handler = new UpdateSaleHandler(_saleRepository, _productRepository, _branchRepository, _eventPublish, _mapper);
     }
@@ -60,12 +61,16 @@ public class UpdateSaleHandlerTests
     public async Task Handle_InvalidBranch_ThrowsInvalidOperationException()
     {
         // Arrange
+        var sale = new Sale { Id = Guid.NewGuid(), BranchId = Guid.NewGuid(), Items = new List<SaleItem>() };
         var command = new UpdateSaleCommand
         {
-            Id = Guid.NewGuid(),
-            BranchId = Guid.NewGuid(),
+            Id = sale.Id,
+            BranchId = sale.BranchId,
             Customer = "Updated Customer",
-            Items = []
+            Items =
+            [
+                new UpdateSaleItemCommand { ProductId = Guid.NewGuid(), Quantity = 5 }
+            ]
         };
 
         _saleRepository.GetByIdAsync(command.Id, Arg.Any<CancellationToken>()).Returns(new Sale());

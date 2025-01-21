@@ -88,5 +88,4 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
 
         return _mapper.Map<UpdateSaleResult>(updatedSale);
     }
-
 }
