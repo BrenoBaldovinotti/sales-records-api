@@ -8,6 +8,8 @@ using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSales;
 using Ambev.DeveloperEvaluation.Application.Sales.ListSales;
 using Ambev.DeveloperEvaluation.Common.Models;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
+using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales;
 
@@ -16,7 +18,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class SaleController : ControllerBase
+public class SalesController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
@@ -26,7 +28,7 @@ public class SaleController : ControllerBase
     /// </summary>
     /// <param name="mediator">The mediator instance.</param>
     /// <param name="mapper">The AutoMapper instance.</param>
-    public SaleController(IMediator mediator, IMapper mapper)
+    public SalesController(IMediator mediator, IMapper mapper)
     {
         _mediator = mediator;
         _mapper = mapper;
@@ -110,6 +112,30 @@ public class SaleController : ControllerBase
             Success = true,
             Message = "Sales retrieved successfully",
             Data = response
+        });
+    }
+
+    [HttpPut("{id}")]
+    [ProducesResponseType(typeof(ApiResponseWithDataModel<UpdateSaleResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponseModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponseModel), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateSale([FromRoute] Guid id, [FromBody] UpdateSaleRequest request, CancellationToken cancellationToken)
+    {
+        var validator = new UpdateSaleRequestValidator();
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.Errors);
+
+        request.Id = id;
+        var command = _mapper.Map<UpdateSaleCommand>(request);
+        var result = await _mediator.Send(command, cancellationToken);
+
+        return Ok(new ApiResponseWithDataModel<UpdateSaleResponse>
+        {
+            Success = true,
+            Message = "Sale updated successfully.",
+            Data = _mapper.Map<UpdateSaleResponse>(result)
         });
     }
 }

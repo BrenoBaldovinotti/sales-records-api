@@ -48,6 +48,18 @@ public class SaleRepository : ISaleRepository
     }
 
     /// <inheritdoc/>
+    public async Task<Sale> UpdateAsync(Sale sale, CancellationToken cancellationToken = default)
+    {
+        // Attach the sale entity to the context
+        _context.Sales!.Update(sale);
+
+        // Save changes to the database
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return sale;
+    }
+
+    /// <inheritdoc/>
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var sale = await GetByIdAsync(id, cancellationToken);
