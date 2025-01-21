@@ -3,6 +3,7 @@ using System;
 using Ambev.DeveloperEvaluation.ORM;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Ambev.DeveloperEvaluation.ORM.Migrations
 {
     [DbContext(typeof(DefaultContext))]
-    partial class DefaultContextModelSnapshot : ModelSnapshot
+    [Migration("20250120210242_AddSalesFeature")]
+    partial class AddSalesFeature
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,18 +40,6 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Branches", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("61e628b6-64a0-419e-8b33-0e7c76f0a312"),
-                            Name = "Branch 1"
-                        },
-                        new
-                        {
-                            Id = new Guid("b9770758-9dae-422f-9d3e-c018c0339ea8"),
-                            Name = "Branch 2"
-                        });
                 });
 
             modelBuilder.Entity("Ambev.DeveloperEvaluation.Domain.Entities.Product", b =>
@@ -69,26 +60,6 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Products", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("ca0165b8-c74f-4e8b-8d96-48a7b938c5c9"),
-                            BasePrice = 50.00m,
-                            Name = "Product A"
-                        },
-                        new
-                        {
-                            Id = new Guid("fe06f942-f3bc-4efd-b8c2-986474d6f967"),
-                            BasePrice = 30.00m,
-                            Name = "Product B"
-                        },
-                        new
-                        {
-                            Id = new Guid("ad081d1f-46eb-43ae-80ca-37a9b6f4540e"),
-                            BasePrice = 20.00m,
-                            Name = "Product C"
-                        });
                 });
 
             modelBuilder.Entity("Ambev.DeveloperEvaluation.Domain.Entities.Sale", b =>
